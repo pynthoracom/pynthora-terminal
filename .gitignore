@@ -1,0 +1,29 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.pynthorarc
+.pynthorarc.json
+.pynthorarc.yaml
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
