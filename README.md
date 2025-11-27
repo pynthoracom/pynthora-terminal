@@ -2,6 +2,8 @@
 
 > Data ingestion SDK + CLI for connecting real-world robot fleets to the pynthora network.
 
+**Current Version: v0.2.0**
+
 ## 🚀 What is this?
 
 pynthora Terminal is a developer-focused toolkit that lets you:

@@ -121,13 +121,94 @@ async fn main() {
     }
 }
 
-// Placeholder modules - will be implemented
+// Status command with real-time health monitoring (v0.2.0)
 mod status {
-    use anyhow::Result;
-    use tracing::info;
+    use anyhow::{Context, Result};
+    use colored::*;
+    use indicatif::{ProgressBar, ProgressStyle};
+    use pynthora_terminal::core::config::Config;
+    use pynthora_terminal::sdk::client::Client;
+    use std::time::Duration;
+    use tokio::time::sleep;
 
-    pub async fn run(_verbose: bool) -> Result<()> {
-        info!("Status command - coming soon");
+    pub async fn run(verbose: bool) -> Result<()> {
+        let config = Config::load(None)?;
+        let client = Client::new(config);
+
+        println!("{} Checking pynthora terminal health...", "ℹ".blue());
+
+        let health = client.health_check().await
+            .context("Failed to check health status")?;
+
+        println!("\n{} Health Status", "=".cyan().bold());
+        println!("  Status: {}", 
+            if health.status == "healthy" { 
+                "✓ Healthy".green() 
+            } else { 
+                format!("✗ {}", health.status).red() 
+            }
+        );
+
+        if let Some(version) = health.version {
+            println!("  Version: {}", version);
+        }
+
+        if let Some(uptime) = health.uptime {
+            let hours = uptime / 3600;
+            let minutes = (uptime % 3600) / 60;
+            println!("  Uptime: {}h {}m", hours, minutes);
+        }
+
+        if verbose {
+            if let Some(metrics) = health.metrics {
+                println!("\n{} Metrics", "=".cyan().bold());
+                if let Some(total) = metrics.requests_total {
+                    println!("  Total Requests: {}", total);
+                }
+                if let Some(rps) = metrics.requests_per_second {
+                    println!("  Requests/sec: {:.2}", rps);
+                }
+                if let Some(latency) = metrics.latency_ms {
+                    println!("  Avg Latency: {:.2}ms", latency);
+                }
+            }
+        }
+
+        // Real-time monitoring mode (v0.2.0)
+        if verbose {
+            println!("\n{} Starting real-time monitoring (Ctrl+C to stop)...", "ℹ".blue());
+            
+            let pb = ProgressBar::new_spinner();
+            pb.set_style(
+                ProgressStyle::default_spinner()
+                    .template("{spinner:.green} Monitoring... {msg}")
+                    .unwrap(),
+            );
+
+            loop {
+                match client.health_check().await {
+                    Ok(health) => {
+                        let status_icon = if health.status == "healthy" { "✓" } else { "✗" };
+                        let status_color = if health.status == "healthy" { "green" } else { "red" };
+                        
+                        let mut msg = format!("{} Status: {}", status_icon, health.status);
+                        if let Some(metrics) = &health.metrics {
+                            if let Some(rps) = metrics.requests_per_second {
+                                msg.push_str(&format!(" | RPS: {:.2}", rps));
+                            }
+                        }
+                        
+                        pb.set_message(msg);
+                    }
+                    Err(e) => {
+                        pb.set_message(format!("✗ Error: {}", e));
+                    }
+                }
+                
+                sleep(Duration::from_secs(2)).await;
+            }
+        }
+
         Ok(())
     }
 }
