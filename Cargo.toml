@@ -1,6 +1,6 @@
 [package]
 name = "pynthora-terminal"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["pynthora Foundation"]
 description = "pynthora Terminal - data ingestion CLI + SDK for autonomous robot networks"
@@ -54,6 +54,16 @@ validator = { version = "0.18", features = ["derive"] }
 
 # URL parsing
 url = "2.5"
+
+# WebSocket support (v0.3.0)
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+futures-util = "0.3"
+
+# OAuth2 support (v0.3.0)
+oauth2 = { version = "4.4", features = ["reqwest"] }
+
+# Multi-workspace support (v0.3.0)
+toml = "0.8"
 
 [dev-dependencies]
 # Testing

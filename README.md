@@ -2,7 +2,7 @@
 
 > Data ingestion SDK + CLI for connecting real-world robot fleets to the pynthora network.
 
-**Current Version: v0.2.0**
+**Current Version: v0.3.0**
 
 ## 🚀 What is this?
 
@@ -19,6 +19,13 @@ The repo ships with both:
 1. **CLI** – `pynthora-terminal` executable for daily ops
 2. **SDK** – Rust library for embedding ingestion flows inside services
 
+## ✨ v0.3.0 New Features
+
+- **WebSocket Streaming**: Real-time bidirectional communication with automatic reconnection
+- **Multi-Workspace Management**: Handle multiple projects simultaneously with easy switching
+- **Enhanced Security**: OAuth2 support and improved authentication
+- **Better Performance**: Optimized connection pooling and async handling
+
 ## 📂 Structure
 
 ```
@@ -29,11 +36,15 @@ pynthora-terminal/
 │   ├── core/
 │   │   ├── config.rs    # Environment + project config loader
 │   │   ├── logger.rs    # Colored logger
-│   │   └── telemetry.rs # Shared telemetry helpers
+│   │   ├── telemetry.rs # Shared telemetry helpers
+│   │   ├── retry.rs     # Retry logic with exponential backoff
+│   │   ├── validation.rs # Pipeline & event validation
+│   │   └── workspace.rs # Multi-workspace management (v0.3.0)
 │   ├── sdk/
 │   │   ├── client.rs    # High-level ingestion client
 │   │   ├── pipelines/   # Declarative pipeline parser
-│   │   └── signing.rs   # Proof + signature helpers
+│   │   ├── signing.rs   # Proof + signature helpers
+│   │   └── websocket.rs # WebSocket streaming (v0.3.0)
 │   └── commands/
 │       ├── init.rs      # `pynthora-terminal init`
 │       ├── pipeline.rs # `pynthora-terminal pipeline push`
@@ -94,9 +105,13 @@ Use `pynthora-terminal init` to scaffold the config interactively.
 | `pynthora-terminal pipeline list`           | List all pipelines                                     |
 | `pynthora-terminal pipeline show <id>`      | Show pipeline details                                  |
 | `pynthora-terminal stream --file data.json` | Replay local dataset into ingestion gateway            |
+| `pynthora-terminal stream --ws`             | Stream data via WebSocket (v0.3.0)                     |
 | `pynthora-terminal status`                  | View ingestion metrics + health check                  |
 | `pynthora-terminal keys rotate`             | Rotate API keys with automated revocation              |
 | `pynthora-terminal keys show`               | Show current API key info                              |
+| `pynthora-terminal workspace list`          | List all workspaces (v0.3.0)                           |
+| `pynthora-terminal workspace switch <name>` | Switch to a different workspace (v0.3.0)               |
+| `pynthora-terminal workspace add <name>`    | Add a new workspace (v0.3.0)                           |
 
 ## 🧪 Development
 
